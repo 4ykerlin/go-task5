@@ -1,0 +1,22 @@
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func main() {
+	result := make(chan string)
+
+	go func() {
+		time.Sleep(3 * time.Second) 
+		result <- "ответ от сервера"
+	}()
+
+	select {
+	case res := <-result:
+		fmt.Println("Успели получить:", res)
+	case <-time.After(2 * time.Second):
+		fmt.Println("Таймаут! Сервер не ответил за 2 секунды")
+	}
+}
