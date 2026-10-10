@@ -1,0 +1,29 @@
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func main() {
+	done := make(chan struct{}) 
+
+	go func() {
+		for {
+			select {
+			case <-done:
+				fmt.Println("Горутина остановлена")
+				return
+			case <-time.After(1 * time.Second):
+				fmt.Println("Я работаю...")
+			}
+		}
+	}()
+
+	time.Sleep(3 * time.Second)
+
+	done <- struct{}{}
+
+	time.Sleep(500 * time.Millisecond)
+	fmt.Println("main завершена")
+}
