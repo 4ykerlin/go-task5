@@ -1,0 +1,44 @@
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+type Task struct {
+	Name     string
+	Priority string
+}
+
+func main() {
+	high := make(chan Task, 10)
+	low := make(chan Task, 10)
+
+	go func() {
+		for {
+			
+			select {
+			case t := <-high:
+				fmt.Println("Срочно:", t.Name)
+				continue
+			default:
+			}
+
+			select {
+			case t := <-high:
+				fmt.Println("Срочно:", t.Name)
+			case t := <-low:
+				fmt.Println("Обычная:", t.Name)
+			}
+		}
+	}()
+
+	// Отправляем задачи
+	low <- Task{"заказ 1", "обычный"}
+	low <- Task{"заказ 2", "обычный"}
+	high <- Task{"заказ 3", "срочный"}
+	high <- Task{"заказ 4", "срочный"}
+	low <- Task{"заказ 5", "обычный"}
+
+	time.Sleep(2 * time.Second)
+}
